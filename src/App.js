@@ -1,10 +1,11 @@
 import './App.css';
+import Routers from './Routers/Routers';
 
 function App() {
   return (
-    <div className="App">
-      SOCIAL MEDIA APP
-    </div>
+    <>
+      <Routers/>
+    </>
   );
 }
 
