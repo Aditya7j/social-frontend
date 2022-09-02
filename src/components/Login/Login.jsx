@@ -6,11 +6,15 @@ import Container from '@mui/material/Container';
 import { useNavigate } from 'react-router-dom';
 import { url } from '../../Url/url';
 import Alert from '@mui/material/Alert';
+import { useDispatch } from 'react-redux';
+import { addUser } from '../../Redux/action';
+import Navbar from '../Navbar/Navbar';
 
 const Login = () => {
   const [buttonDisabler,setButtondisabler] =useState(true);
   const [showAlert,setShowalert] = useState(false);
   const [showError,setShowerror] = useState("");
+  const dispatch = useDispatch()
 
   const navigate = useNavigate()
 
@@ -36,10 +40,15 @@ const Login = () => {
       }
     }).then((res)=>{
       res.json().then((res)=>{
-        if(res.message==="User created successfully"){
+        if(res.message==="logged in successfully"){
+          console.log("hello")
+          localStorage.setItem("token",res.data);
+          dispatch(addUser(res.data));
+          
           navigate("/")
           return;
         }
+        
         else{
           setShowerror(res.message)
           handleAlert()
@@ -66,6 +75,7 @@ const removeAlert = ()=>{
 
   return (
     <React.Fragment>
+      <Navbar/>
     <CssBaseline />
     <Container maxWidth="sm" style={{marginTop:"15vh"}}>
     {showAlert && <><Alert severity="error">{showError}</Alert> <br /></>} 
