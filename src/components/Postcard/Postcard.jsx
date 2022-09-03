@@ -17,7 +17,10 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import Box from '@mui/material/Box';
 import CommentIcon from '@mui/icons-material/Comment';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
+import axios from "axios"
+import { url } from '../../Url/url';
+
 
 
 
@@ -33,20 +36,51 @@ const ExpandMore = styled((props) => {
     }),
   }));
 
+
+  
   
 
-const Postcard = () => {
+const Postcard = ({userId}) => {
     const [showComment,setShowcomment] = useState(false);
 
     const [expanded, setExpanded] = React.useState(false);
+    const [allPost,setAllpost] = useState([]);
+
+   
+  
+
+
+    const getPost =()=>{
+      axios.get(`${url}/feed`).then((res)=>{
+        console.log(res.data)
+        setAllpost(res.data)
+      })
+    }
+    
+    useEffect(()=>{
+      getPost()
+     
+    },[])
+
+    
 
     const handleExpandClick = () => {
       setExpanded(!expanded);
     };
+
+    const handleLike =()=>{
+      axios.post(`${url}/like`,userId).then((res)=>{
+          
+      })
+    }
+
+
   
     return (
       <Card sx={{ maxWidth: "75%"}} style={{margin:"auto"}}>
-        <CardHeader
+        {allPost.map((e)=>(
+          <>
+            <CardHeader
           avatar={
             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
               R
@@ -57,27 +91,25 @@ const Postcard = () => {
               <MoreVertIcon />
             </IconButton>
           }
-          title="Shrimp and Chorizo Paella"
+          title={e.text}
           subheader="September 14, 2016"
         />
         <CardMedia
           component="img"
           height="400"
-          image="https://thumbs.dreamstime.com/b/beautiful-rain-forest-ang-ka-nature-trail-doi-inthanon-national-park-thailand-36703721.jpg"
+          image="https://static.remove.bg/remove-bg-web/45b4adb99db629ba364dd1649ab6e33dfec34929/assets/start_remove-c851bdf8d3127a24e2d137a55b1b427378cd17385b01aec6e59d5d4b5f39d2ec.png"
           alt="Paella dish"
         />
         <CardContent>
           <Typography variant="body2" color="text.secondary">
-            This impressive paella is a perfect party dish and a fun meal to cook
-            together with your guests. Add 1 cup of frozen peas along with the mussels,
-            if you like.
+           {e.text}
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
             <Box></Box>
           <IconButton aria-label="add to favorites">
             
-            <ThumbUpOffAltIcon />
+            <ThumbUpOffAltIcon onClick={handleLike} />
           </IconButton>
           <Box>0</Box>
           <IconButton aria-label="share">
@@ -105,13 +137,21 @@ const Postcard = () => {
           }
           
           
-          title="Nice pic dear"
+          title={e.text}
           subheader="Shrimp and Chorizo Paella"
           
           />
                 
             </Box>
         </Box>}
+
+          </>
+        ))}
+        
+        
+        
+        
+        
       </Card>
     );
   }

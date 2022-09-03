@@ -79,9 +79,9 @@ const removeAlert = ()=>{
     <CssBaseline />
     <Container maxWidth="sm" style={{marginTop:"15vh"}}>
     {showAlert && <><Alert severity="error">{showError}</Alert> <br /></>} 
-      <TextField  onChange={handlechange} id="email" label="Email" variant="outlined" />
+      <TextField  onChange={handlechange} id="email" label="Email" variant="outlined" type="email" />
       <br/><br/>
-        <TextField onChange={handlechange} id="password" label="Password" variant="outlined" />
+        <TextField onChange={handlechange} id="password" label="Password" variant="outlined" type="password" />
         <br/><br/>
         <Button disabled={buttonDisabler} onClick={handleSubmit} variant="contained" size ="large">Log In </Button>
     </Container>

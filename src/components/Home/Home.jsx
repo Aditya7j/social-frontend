@@ -12,6 +12,7 @@ import { addUser } from '../../Redux/action';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import axios from "axios";
+import Avatar from '@mui/material/Avatar';
 
 
 const Home = () => {
@@ -22,11 +23,17 @@ const Home = () => {
   })
   const [buttonDisabler,setButtondisabler] =useState(true);
   const [data,setData] = useState([]);
+  const [showImage,setShowimage] = useState(undefined);
+
+  const [profileData,setProfiledata] = useState("");
+  const [userId,setUserid] = useState("");
+
+  
 
 
   const [postData,setpostData] = useState({
     text:"",
-    profile_pic:"",
+    profile_pic:showImage,
     user_id: ""
   })
 
@@ -41,7 +48,20 @@ const Home = () => {
     
   }
 
-  const handlePost = ()=>{
+  const handleChangefile =(e)=>{
+    setShowimage(e.target.files[0])
+    
+  }
+
+  const handlePost = (e)=>{
+    //console.log(showImage)
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("text",postData.text)
+    formData.append("profile_pic",showImage)
+    formData.append("user_id",postData.user_id)
+    console.log(formData)
+    console.log(postData)
     // fetch(`${url}/feed`,{
     //   method:"POST",
     //   body:JSON.stringify(postData),
@@ -50,15 +70,19 @@ const Home = () => {
     //   }
     // }).then((res)=>{
     //   //console.log(res.body)
+
     //   res.json().then((res)=>{
-    //     //console.log(res.text)
+    //     console.log(res.text)
+
     //     //alert("Post Success")
     //   }).catch((err)=>{
     //     console.log(err.message)
     //   })
     // })
-    axios.post(`${url}/feed`).then((res)=>{
+    axios.post(`${url}/feed`,formData).then((res)=>{
       console.log(res)
+    }).catch((err)=>{
+      console.log(err.message)
     })
   }
 
@@ -80,7 +104,9 @@ const Home = () => {
           //console.log(res)
           
           dispatch(addUser(res.user))
-          setpostData({...postData,user_id:res.user._id})
+          setpostData({...postData,user_id:res?.user?._id})
+          setUserid(res?.user?._id)
+          setProfiledata(`${res.user.firstName} ${res.user.lastName}`)
         })
       })
      
@@ -88,7 +114,7 @@ const Home = () => {
 
   useEffect(()=>{
     if(!token){
-      //navigate("/register")
+      navigate("/register")
       //line 92 important
     }
     else{
@@ -96,17 +122,20 @@ const Home = () => {
       fetchUser()
       getUser()
       //console.log(token)
-      
-      
+
     }   
   },[])
 
+
+
   const getUser = ()=>{
     axios.get(`${url}/register`).then((res)=>{
-      console.log(res.data)
+      //console.log(res.data)
       setData(res.data)
     })
   }
+
+  
 
 
   return (
@@ -120,7 +149,7 @@ const Home = () => {
            </h2> <hr />
             {data.map((e)=>(
               <>
-              <div style={{borderBottom:"1px solid gray"}}>
+              <div key={e.id} style={{borderBottom:"1px solid gray"}}>
               <span style={{fontSize:"1.3em",fontWeight:"400",lineHeight:"3",marginLeft:"1vh"}}>{e.firstName}</span>  
               <span style={{fontSize:"1.3em",fontWeight:"400"}}> {e.lastName}</span> 
               </div>
@@ -131,7 +160,9 @@ const Home = () => {
           </Box1>
           <Box1 style={{ width:"50%",height:"100vh"}}>
             <Box>
-            <TextField
+
+        <form onSubmit={handlePost}>
+          <TextField
           id="text"
           label="What's in your mind"
           multiline
@@ -141,19 +172,28 @@ const Home = () => {
           onChange={handleChange}
       
         />
-        <TextField id="profile_pic"  variant="outlined"  type="file" onChange={handleChange} />
+        <TextField id="profile_pic"  variant="outlined"  type="file" onChange={handleChangefile} />
         <Box style={{display:"flex",justifyContent:"flex-end",marginBottom:"5vh"}}>
         <Button onClick={handlePost}  disabled={buttonDisabler} variant="text" align="right">POST</Button>
         </Box>
+              </form>
+          
+
+        
           
             </Box>
-            <Postcard/>
+
+            <Postcard userId={userId}/>
+
+
           </Box1>
             <Box1 style={{ width:"21%",height:"100vh"}}>
             <Box style={{width:"100%",height:"25%",border:"1px solid gray",borderRadius:"7px"}}></Box>
-            <Box style={{width:"80px",height:"80px",border:"1px solid red",marginTop:"-15px",marginLeft:"15vh",borderRadius:"5px"}}></Box>
-            <h4 style={{marginLeft:"14vh",fontWeight:"900",color:"#000"}}>Aditya Kumar</h4>
-            <br />
+            <Box style={{width:"80px",height:"80px",marginTop:"-35px",marginLeft:"15vh",borderRadius:"5px"}}>
+            <Avatar style={{width:"100%",height:"100%"}} src="/broken-image.jpg" />
+            </Box>
+            <span style={{marginLeft:"14vh",fontWeight:"900",color:"#000"}}>{profileData}</span>
+            <br /><br />
             <TextField
           id="text"
           label="What do you Think"
@@ -162,15 +202,12 @@ const Home = () => {
           fullWidth={true}
           variant="filled"
           onChange={handleChange}
-      
         />
           </Box1>
       </Box>
-      
-    
     </>
-   
   )
 }
 
 export default Home
+

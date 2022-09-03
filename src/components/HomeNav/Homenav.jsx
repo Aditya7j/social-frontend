@@ -58,6 +58,11 @@ const Search = styled('div')(({ theme }) => ({
     },
   }));
 
+  const handleLogout = ()=>{
+      localStorage.clear()
+      window.location.reload()
+  }
+
 const Homenav = () => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -215,7 +220,7 @@ const Homenav = () => {
                 <MoreIcon />
               </IconButton>
             </Box>
-            <Button sx={{ color: '#fff' }} varient="outlined">{"LOGOUT"}</Button>
+            <Button onClick={handleLogout} sx={{ color: '#fff' }} varient="outlined">{"LOGOUT"}</Button>
           </Toolbar>
         </AppBar>
         {renderMobileMenu}
